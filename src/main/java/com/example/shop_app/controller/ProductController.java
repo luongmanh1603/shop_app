@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,22 +48,27 @@ public class ProductController {
 
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            MultipartFile file = productDTO.getFile();
-           if (file != null) {
-               //kiểm tra kich thuoc va dinh dang file
-               if (file.getSize() > 10 * 1024 * 1024) {
-                   return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                           .body("File size must be less than 10MB");
-               }
-               String contentType = file.getContentType();
-               if(contentType == null || !contentType.startsWith("image/")) {
-                   return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                           .body("File must be in image format");
-               }
+            List<MultipartFile> files = productDTO.getFiles();
+            files = files == null ? new ArrayList<MultipartFile>() : files;
+            for (MultipartFile file : files) {
+                if (file.getSize() == 0) {
+                    continue;
+                }
+
+                if (file.getSize() > 10 * 1024 * 1024) {
+                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                            .body("File size must be less than 10MB");
+                }
+                String contentType = file.getContentType();
+                if(contentType == null || !contentType.startsWith("image/")) {
+                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                            .body("File must be in image format");
+                }
                 //luu file
                 String fileName = storeFile(file);
                 productDTO.setThumbnail(fileName);
-           }
+            }
+
 
             return ResponseEntity.ok("Product added success: " + productDTO.getName());
 
