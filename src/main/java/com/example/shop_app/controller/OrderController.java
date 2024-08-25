@@ -50,10 +50,10 @@ public class OrderController {
     @PutMapping("/updateOrder/{id}")
     public ResponseEntity<?> updateOrder(
             @Valid @PathVariable long id,
-            @Valid @RequestBody OrderDTO orderDTO,
+            @Valid @RequestBody OrderDTO neworderDTO,
             BindingResult result
     ) {
-        return ResponseEntity.ok("Order updated");
+        return ResponseEntity.ok("Order updated: " + id + " with new info: " + neworderDTO);
     }
 
     //xoa order theo order_id
@@ -62,6 +62,6 @@ public class OrderController {
             @Valid @PathVariable Long id
     ) {
         //xoa mem -> cap nhap truogn active = false
-        return ResponseEntity.ok("Order deleted");
+        return ResponseEntity.ok("Order deleted: " + id);
     }
 }
