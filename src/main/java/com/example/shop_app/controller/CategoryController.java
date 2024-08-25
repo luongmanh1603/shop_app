@@ -11,7 +11,7 @@ import org.springframework.validation.BindingResult;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("${api.prefix}/categories")
 //@Validated
 public class CategoryController {
 

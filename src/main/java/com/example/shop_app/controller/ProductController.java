@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("${api.prefix}/products")
 public class ProductController {
 
     @GetMapping("/listProducts")
