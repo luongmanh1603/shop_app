@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.Cache;
 
 @Data
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
