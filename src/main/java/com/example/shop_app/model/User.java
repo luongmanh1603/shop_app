@@ -3,7 +3,7 @@ package com.example.shop_app.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Data
 @Getter
