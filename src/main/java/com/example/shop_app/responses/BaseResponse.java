@@ -1,5 +1,6 @@
-package com.example.shop_app.model;
+package com.example.shop_app.responses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
@@ -15,22 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
-public class BaseModel {
-    @Column(name ="create_at")
+public class BaseResponse {
+    @JsonProperty("create_at")
     private LocalDateTime createAt;
 
-    @Column(name = "update_at")
+    @JsonProperty("update_at")
     private LocalDateTime updateAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createAt = LocalDateTime.now();
-        updateAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updateAt = LocalDateTime.now();
-    }
 
 }
