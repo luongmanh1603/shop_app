@@ -3,6 +3,7 @@ package com.example.shop_app.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -23,7 +24,7 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "full_name",  length = 100)
+    @Column(name = "fullname",  length = 100)
     private String fullName;
 
     @Column(name = "email", length = 100)
@@ -38,7 +39,7 @@ public class Order {
     private String note;
 
     @Column(name = "order_date")
-    private LocalDateTime orderDate;
+    private Date orderDate;
 
     @Column(name = "status")
     private  String status;
@@ -53,7 +54,7 @@ public class Order {
     private String shippingAddress;
 
     @Column(name = "shipping_date")
-    private Date shippingDate;
+    private LocalDate shippingDate;
 
     @Column(name = "tracking_number")
     private String trackingNumber;

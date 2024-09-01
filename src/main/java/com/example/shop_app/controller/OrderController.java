@@ -2,7 +2,11 @@ package com.example.shop_app.controller;
 
 
 import com.example.shop_app.dto.OrderDTO;
+import com.example.shop_app.model.Order;
+import com.example.shop_app.responses.OrderResponse;
+import com.example.shop_app.service.OrderService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -12,7 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/orders")
+@RequiredArgsConstructor
 public class OrderController {
+    private final OrderService orderService;
 
     @PostMapping("/addOrder")
     public ResponseEntity<?> createOrder(
@@ -28,7 +34,8 @@ public class OrderController {
 
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            return ResponseEntity.ok("Order created");
+              Order order = orderService.createOrder(orderDTO);
+            return ResponseEntity.ok( order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
