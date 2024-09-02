@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -51,22 +52,45 @@ public class OrderService implements IOrderService{
     }
 
     @Override
-    public Order getOrderById(Long id) {
-        return null;
+    public Order getOrderById(Long id) throws DataNotFoundException {
+        return orderRepo.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Order not found:" + id));
     }
 
     @Override
-    public List<Order> getAllOrders() {
-        return List.of();
+    public List<Order> getOrdersByUserId(Long userId) {
+
+        return orderRepo.findByUserId(userId);
     }
 
     @Override
-    public Order updateOrder(Long id, OrderDTO orderDTO) {
-        return null;
+    public Order updateOrder(Long id, OrderDTO orderDTO) throws DataNotFoundException {
+        Order existingOrder = orderRepo.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Order not found:" + id));
+        User existingUser = userRepo.findById(orderDTO.getUserId())
+                .orElseThrow(() -> new DataNotFoundException("User not found:" + orderDTO.getUserId()));
+        modelMapper.typeMap(OrderDTO.class, Order.class)
+                .addMappings(mapper -> mapper.skip(Order::setId));
+        modelMapper.map(orderDTO, existingOrder);
+        existingOrder.setUser(existingUser);
+        //check status
+
+
+        return orderRepo.save(existingOrder);
     }
 
     @Override
-    public void deleteOrder(Long id) {
+    public void deleteOrder(Long id) throws DataNotFoundException {
+        //khong xoa order ma chi set active = false
+        Order order = orderRepo.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Order not found:" + id));
+        if (order != null) {
+            order.setActive(false);
+            orderRepo.save(order);
+        } else {
+            throw new DataNotFoundException("Order not found:" + id);
+
+        }
 
     }
 }

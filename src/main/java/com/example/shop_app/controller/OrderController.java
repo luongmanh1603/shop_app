@@ -41,13 +41,28 @@ public class OrderController {
         }
     }
 
+
     //lay order theo user_id
     @GetMapping("/user/{user_id}")
     public ResponseEntity<?> getOrdersByUserId(
                       @Valid @PathVariable("user_id") Long userId
     ) {
         try {
-               return ResponseEntity.ok("List orders of user with id: " + userId);
+            List<Order> orders = orderService.getOrdersByUserId(userId);
+               return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    //lay order theo order_id
+    @GetMapping("/{order_id}")
+    public ResponseEntity<?> getOrdersByOrderId(
+            @Valid @PathVariable("order_id") Long orderId
+    ) {
+        try {
+           Order order = orderService.getOrderById(orderId);
+            return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
@@ -60,7 +75,12 @@ public class OrderController {
             @Valid @RequestBody OrderDTO neworderDTO,
             BindingResult result
     ) {
-        return ResponseEntity.ok("Order updated: " + id + " with new info: " + neworderDTO);
+        try {
+            Order order = orderService.updateOrder(id, neworderDTO);
+            return ResponseEntity.ok(order);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 
     //xoa order theo order_id
@@ -69,6 +89,12 @@ public class OrderController {
             @Valid @PathVariable Long id
     ) {
         //xoa mem -> cap nhap truogn active = false
-        return ResponseEntity.ok("Order deleted: " + id);
+        try {
+            orderService.deleteOrder(id);
+            return ResponseEntity.ok("Order deleted: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+
     }
 }
