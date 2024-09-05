@@ -3,6 +3,7 @@ package com.example.shop_app.controller;
 import com.example.shop_app.dto.OrderDetailDTO;
 import com.example.shop_app.exception.DataNotFoundException;
 import com.example.shop_app.model.OrderDetail;
+import com.example.shop_app.responses.OrderDetailResponse;
 import com.example.shop_app.service.OrderDetailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,16 +21,30 @@ public class OrderDetailController {
     @GetMapping("/getOrderDetail/{id}")
     public ResponseEntity<?> getOrderDetail(
             @Valid @PathVariable("id") Long id
-    ) throws DataNotFoundException {
-      OrderDetail orderDetail =  orderDetailService.getOrderDetailById(id);
-        return ResponseEntity.ok(orderDetail);
+    ){
+        try {
+            OrderDetail orderDetail =  orderDetailService.getOrderDetailById(id);
+            return ResponseEntity.ok(OrderDetailResponse.fromOrderDetail(orderDetail));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+
     }
     @GetMapping("/order/{orderId}")
     public ResponseEntity<?> getOrderDetails(
             @Valid @PathVariable("orderId") Long orderId
     ) {
-        List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
-        return ResponseEntity.ok(orderDetails);
+        try {
+            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
+            List<OrderDetailResponse> orderDetailResponses = orderDetails.stream()
+                    .map(OrderDetailResponse::fromOrderDetail)
+                    .toList();
+            return ResponseEntity.ok(orderDetailResponses);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+
     }
 
 
@@ -41,7 +56,7 @@ public class OrderDetailController {
 
         try {
             OrderDetail newOrderDetail = orderDetailService.createOrderDetail(orderDetailDTO);
-            return ResponseEntity.ok(newOrderDetail);
+            return ResponseEntity.ok(OrderDetailResponse.fromOrderDetail(newOrderDetail));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -52,13 +67,26 @@ public class OrderDetailController {
             @Valid @PathVariable long id,
             @Valid @RequestBody OrderDetailDTO neworderDetailDTO
     ) {
-        return ResponseEntity.ok("Order detail updated: " + id + " with new info: " + neworderDetailDTO);
+        try {
+            OrderDetail orderDetail = orderDetailService.updateOrderDetail(id, neworderDetailDTO);
+            return ResponseEntity.ok(OrderDetailResponse.fromOrderDetail(orderDetail));
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
     @DeleteMapping("/deleteOrderDetail/{id}")
     public ResponseEntity<?> deleteOrderDetail(
             @Valid @PathVariable long id
     ) {
-        return ResponseEntity.ok("Order detail with id: " + id + " deleted");
+        try {
+            orderDetailService.deleteOrderDetail(id);
+            return ResponseEntity.ok("Order detail deleted with id: " + id);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+
     }
 
 

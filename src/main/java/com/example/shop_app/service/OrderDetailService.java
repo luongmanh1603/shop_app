@@ -31,6 +31,7 @@ public class OrderDetailService implements IOrderDetailService{
                 .order(order)
                 .product(product)
                 .numberOfProducts(orderDetailDTO.getNumberOfProducts())
+                .price(orderDetailDTO.getPrice())
                 .totalMoney(orderDetailDTO.getTotalMoney())
                 .color(orderDetailDTO.getColor())
                 .build();
@@ -46,13 +47,29 @@ public class OrderDetailService implements IOrderDetailService{
     }
 
     @Override
-    public OrderDetail updateOrderDetail(Long id, OrderDetailDTO orderDetailDTO) {
+    public OrderDetail updateOrderDetail(Long id, OrderDetailDTO orderDetailDTO) throws DataNotFoundException {
+        //kiem tra xem order detail co ton tai khong
+        OrderDetail orderDetail = orderDetailRepo.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Order detail not found with id: " + id));
+        Order order = orderRepo.findById(orderDetailDTO.getOrderId())
+                .orElseThrow(() -> new DataNotFoundException("Order not found with id: " + orderDetailDTO.getOrderId()));
+        Product product = productRepo.findById(orderDetailDTO.getProductId())
+                .orElseThrow(() -> new DataNotFoundException("Product not found with id: " + orderDetailDTO.getProductId()));
+        orderDetail.setOrder(order);
+        orderDetail.setProduct(product);
+        orderDetail.setPrice(orderDetailDTO.getPrice());
+        orderDetail.setTotalMoney(orderDetailDTO.getTotalMoney());
+        orderDetail.setNumberOfProducts(orderDetailDTO.getNumberOfProducts());
+        orderDetail.setColor(orderDetailDTO.getColor());
+        return orderDetailRepo.save(orderDetail);
 
-        return null;
+
     }
 
     @Override
-    public void deleteOrderDetail(Long id) {
+    public void deleteOrderDetail(Long id) throws DataNotFoundException {
+        OrderDetail orderDetail = orderDetailRepo.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Order detail not found with id: " + id));
         orderDetailRepo.deleteById(id);
 
     }
