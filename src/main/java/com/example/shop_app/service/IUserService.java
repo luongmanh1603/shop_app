@@ -5,6 +5,6 @@ import com.example.shop_app.exception.DataNotFoundException;
 import com.example.shop_app.model.User;
 
 public interface IUserService {
-    User createUser(UserDTO userDTO) throws DataNotFoundException;
+    User createUser(UserDTO userDTO) throws Exception;
     String login(String phoneNumber, String password) throws DataNotFoundException;
 }

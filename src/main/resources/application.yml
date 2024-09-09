@@ -25,4 +25,4 @@ api:
   prefix: /api
 jwt:
   expiration: 2592000
-  secretKey: Ihaveadream
+  secretKey: enRmc3R5eW4zc3BhdW5tMjg3cHY5cWQyb2pxanoxdnJ4bjk0bmFkZXhqcjJ4eGpldGlscmZnenJyY2llZjNxN2Q5N3dwNmltdnA1YXFlN2JxMnIwdnU2dm51c2p4Ynk3Ym15emQxZnZmc3M4ZzE1cnZubG80d2N4Z3VqN2cxNjg3c3

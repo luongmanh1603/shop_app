@@ -10,6 +10,7 @@ import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -27,6 +28,8 @@ public class JwtTokenUtil {
 
     @Value("${jwt.secretKey}")
     private String secretKey;
+
+
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -47,8 +50,9 @@ public class JwtTokenUtil {
         }
     }
     private Key getSignInKey() {
-        // Generate a secure key
-        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        // Use the secret key from the configuration
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        Key key = Keys.hmacShaKeyFor(keyBytes);
         return key;
     }
 
@@ -67,6 +71,13 @@ public class JwtTokenUtil {
     private Boolean isTokenExpired(String token) {
         Date expiration = this.extractClaim(token, Claims::getExpiration);
         return expiration.before(new Date());
+    }
+    public String extractPhoneNumber(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+    public Boolean validateToken(String token, UserDetails user) {
+        final String phoneNumber = extractPhoneNumber(token);
+        return (phoneNumber.equals(user.getUsername()) && !isTokenExpired(token));
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.shop_app.service;
 import com.example.shop_app.components.JwtTokenUtil;
 import com.example.shop_app.dto.UserDTO;
 import com.example.shop_app.exception.DataNotFoundException;
+import com.example.shop_app.exception.PermissionDenvException;
 import com.example.shop_app.model.Role;
 import com.example.shop_app.model.User;
 import com.example.shop_app.repo.RoleRepo;
@@ -26,11 +27,17 @@ public class UserService implements IUserService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public User createUser(UserDTO userDTO) throws DataNotFoundException {
+    public User createUser(UserDTO userDTO) throws Exception {
         String phoneNumber = userDTO.getPhoneNumber();
         // Check if the user already exists
         if (userRepo.existsByPhoneNumber(phoneNumber)) {
             throw new RuntimeException("User already exists");
+        }
+        Role role = roleRepo.findById(userDTO.getRoleId())
+                .orElseThrow(() -> new DataNotFoundException("Role not found"));
+        if(role.getName().equals(Role.ADMIN)) {
+            throw new PermissionDenvException("You don't have permission to create an admin");
+
         }
         User newUser = User.builder()
                 .fullName(userDTO.getFullName())
@@ -41,9 +48,8 @@ public class UserService implements IUserService {
                 .facebookAccountId(userDTO.getFacebookAccountId())
                 .googleAccountId(userDTO.getGoogleAccountId())
                 .build();
-        Role existingRole = roleRepo.findById(userDTO.getRoleId())
-                .orElseThrow(() -> new DataNotFoundException("Role not found"));
-        newUser.setRole(existingRole);
+
+        newUser.setRole(role);
         //kiem tra neu co account facebook hoac google thi khong can password
         if (userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() ==0){
             String password = userDTO.getPassword();
